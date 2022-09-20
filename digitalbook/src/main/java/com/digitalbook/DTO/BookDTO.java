@@ -21,5 +21,11 @@ public class BookDTO {
 	private String publisher;
 
 	private String logo;
+	
+	private String publisherDate;
+	
+	private String active;
+	
+	private String content;
 
 }

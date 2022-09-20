@@ -53,4 +53,9 @@ public class Book {
 	@Column(name = "book_published_date")
 	private Timestamp publishedDate;
 
+	@Column(name = "book_active")
+	private String active;
+	
+	@Column(name = "book_content")
+	private String content;
 }
