@@ -14,8 +14,10 @@ import javax.persistence.Table;
 
 import com.sun.istack.NotNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
@@ -23,6 +25,8 @@ import lombok.ToString;
 @Table(name = "books")
 @Builder(toBuilder = true)
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class Book {
 
 	@Id

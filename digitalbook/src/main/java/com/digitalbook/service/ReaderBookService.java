@@ -1,21 +1,24 @@
 package com.digitalbook.service;
 
-import java.math.BigDecimal;
+
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.digitalbook.entity.Book;
+import com.digitalbook.entity.Order;
 import com.digitalbook.repository.BookRepository;
+import com.digitalbook.repository.OrderRepository;
 import com.digitalbook.repository.ReadresRepository;
 
 
@@ -29,8 +32,9 @@ public class ReaderBookService {
 	
 	@Autowired
 	ReadresRepository readresRepository;
-
-	public String searchBooks(String category, String author, String price, String publisher) throws JSONException {
+	@Autowired
+	OrderRepository orderRepository;
+	public String searchBooks(String category, String author, String price, String publisher) {
 		String dynamicquery = "select * from books where ";
 		String query = "";
 		HashMap<String, String> hashMap = new HashMap<String, String>();
@@ -121,6 +125,82 @@ public class ReaderBookService {
 			e.printStackTrace();
 		}
 		return jsonArray.toString();
+	}
+
+	public String buyABook(String request) {
+		String response="failure";
+		JSONObject jsonObject = new JSONObject(request);
+		int bookId = jsonObject.getInt("bookId");
+		String readerName = jsonObject.getString("readerName");
+		String readerEmailId = jsonObject.getString("readerEmailId");
+		
+		List<Object[]> book = bookRepository.checkExistUserAndBook(bookId,readerName,readerEmailId);
+		if(!book.isEmpty()) {
+			Random random = new Random();
+			String paymentId = String.format("%04d", random.nextInt(10000));
+			Object[] objects = book.get(0);
+			Order order = new Order();
+			order.setBookId(bookId);
+			order.setReaderId(Integer.parseInt(objects[1].toString()));
+			order.setPaymentId(paymentId);
+			order.setStatus("COMPLETED");
+			orderRepository.save(order);
+			response="Buy a book Successfully";
+		}else {
+			response="failure";
+		}
+		JSONObject object = new JSONObject();
+		object.put("response", response);
+		return object.toString();
+	}
+
+	public String readABook(String emailId, int bookId) {
+		String response=null;
+		List<Object[]> book = orderRepository.checkExistUserByEmailAndBook(emailId,bookId);
+		JSONObject jsonObject = new JSONObject();
+		if(!book.isEmpty()) {
+			Object[] objects = book.get(0);
+			
+			jsonObject.put("title", objects[0]);
+			jsonObject.put("content", objects[1]);
+			jsonObject.put("author", objects[2]);
+			jsonObject.put("category", objects[3]);
+			jsonObject.put("logo", objects[4]);
+			jsonObject.put("price", objects[5]);
+			jsonObject.put("publishedDate", objects[6]);
+			jsonObject.put("publisher", objects[7]);
+		}else {
+			response="invalid user";
+			jsonObject.put("response", response);
+		}
+		
+		
+		return jsonObject.toString();
+	}
+
+	public String getBookByPaymentId(String emailId, String pid) {
+		String response=null;
+		System.out.println(emailId+""+pid);
+		List<Object[]> book = orderRepository.checkExistUserByEmailAndBookByPaymentId(emailId,pid);
+		JSONObject jsonObject = new JSONObject();
+		if(!book.isEmpty()) {
+			Object[] objects = book.get(0);
+			
+			jsonObject.put("title", objects[0]);
+			jsonObject.put("content", objects[1]);
+			jsonObject.put("author", objects[2]);
+			jsonObject.put("category", objects[3]);
+			jsonObject.put("logo", objects[4]);
+			jsonObject.put("price", objects[5]);
+			jsonObject.put("publishedDate", objects[6]);
+			jsonObject.put("publisher", objects[7]);
+		}else {
+			response="invalid user";
+			jsonObject.put("response", response);
+		}
+		
+		
+		return jsonObject.toString();
 	}
 
 }

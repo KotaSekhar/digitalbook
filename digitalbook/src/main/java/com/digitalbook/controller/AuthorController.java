@@ -1,11 +1,7 @@
 package com.digitalbook.controller;
 
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-
-
-import org.springframework.boot.configurationprocessor.json.JSONException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.digitalbook.DTO.BookDTO;
+import com.digitalbook.DTO.EditBookDTO;
 import com.digitalbook.security.jwt.JwtUtils;
 import com.digitalbook.security.services.TokenValidator;
 import com.digitalbook.service.AuthorBookService;
-
 
 @RestController
 @RequestMapping(value = "/digitalbooks")
@@ -30,28 +26,59 @@ public class AuthorController {
 	AuthorBookService authorBookService;
 	@Autowired
 	TokenValidator tokenValidator;
-	
+
 	@Autowired
 	JwtUtils jwtUtils;
+
 	@PostMapping(value = "/author/{authorId}/books")
-	public ResponseEntity<String> createBookByAuthor(@RequestHeader("Authorization") String token, @PathVariable String authorId,@RequestBody BookDTO bookDTO ) throws JSONException {
+	public ResponseEntity<String> createBookByAuthor(@RequestHeader("Authorization") String token,
+			@PathVariable String authorId, @RequestBody BookDTO bookDTO) {
 		int authorid = Integer.parseInt(authorId);
-		ResponseEntity<String> response;
+		ResponseEntity<String> response = null;
 		String verifyToken = tokenValidator.verifyToken(token);
 		JSONObject jsonObject = new JSONObject(verifyToken.toString());
 		String userName = jsonObject.getString("userName");
 		String userRole = jsonObject.getString("userRole");
 		bookDTO.setAuthor(userName);
-		if(userRole.equals("ROLE_AUTHOR")) {
-			System.out.println("============");
-			String createBookByAuthor = authorBookService.createBookByAuthor(authorid,bookDTO);
-		 if(!createBookByAuthor.isEmpty()) {
-			 response= new ResponseEntity<String>(createBookByAuthor,HttpStatus.OK);
-		 }else {
-			 response= new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-		 }
-		}else {
-			response= new ResponseEntity<String>(new JSONObject().put("response", "Invalid User").toString() ,HttpStatus.OK);
+		if (userRole.equals("ROLE_AUTHOR")) {
+			String validateBookDTO = authorBookService.validateBookDTO(bookDTO);
+			if (validateBookDTO.equalsIgnoreCase("Success")) {
+				String createBookByAuthor = authorBookService.createBookByAuthor(authorid, bookDTO);
+				if (!createBookByAuthor.isEmpty()) {
+					response = new ResponseEntity<String>(createBookByAuthor, HttpStatus.OK);
+				} else {
+					response = new ResponseEntity<String>(
+							new JSONObject().put("response", "create book failure").toString(), HttpStatus.NOT_FOUND);
+				}
+			} else {
+				response = new ResponseEntity<String>(new JSONObject().put("response", validateBookDTO).toString(),
+						HttpStatus.OK);
+			}
+
+		} else {
+			response = new ResponseEntity<String>(new JSONObject().put("response", "Invalid User").toString(),
+					HttpStatus.OK);
+		}
+		return response;
+
+	}
+
+	@PostMapping(value = "/author/{authorId}/books/{bookId}")
+	public ResponseEntity<String> editBlockUnBLockBookByAuthor(@PathVariable String authorId, @PathVariable int bookId,
+			@RequestBody EditBookDTO editBookDTO) {
+		String blockUnblockBookByAuthor = null;
+		if (editBookDTO.getType().equals("EDIT")) {
+			System.out.println("abc");
+			blockUnblockBookByAuthor = authorBookService.editBookByAuthor(authorId, bookId, editBookDTO);
+		} else {
+			blockUnblockBookByAuthor = authorBookService.blockUnblockBookByAuthor(authorId, bookId,
+					editBookDTO.getType());
+		}
+		ResponseEntity<String> response;
+		if (!blockUnblockBookByAuthor.isEmpty()) {
+			response = new ResponseEntity<String>(blockUnblockBookByAuthor, HttpStatus.OK);
+		} else {
+			response = new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
 		return response;
 

@@ -1,31 +1,23 @@
 package com.digitalbook.DTO;
 
+import lombok.Data;
 import java.math.BigDecimal;
 
-import lombok.Data;
-import lombok.ToString;
-
 @Data
-@ToString
-public class BookDTO {
-
+public class EditBookDTO {
 
 	private String title;
 
 	private String category;
-
-	private String author;
 
 	private BigDecimal price;
 
 	private String publisher;
 
 	private String logo;
-	
-	private String publishedDate;
-	
-	private String active;
-	
+
 	private String content;
+	
+	private String type;
 
 }
