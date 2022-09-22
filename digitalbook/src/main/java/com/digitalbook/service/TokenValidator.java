@@ -1,7 +1,8 @@
-package com.digitalbook.security.services;
+package com.digitalbook.service;
 
-import java.util.Base64;
+
 import java.util.List;
+
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.digitalbook.repository.UserRepository;
 import com.digitalbook.security.jwt.JwtUtils;
 
-@Service
+@Service  
 public class TokenValidator {
 
 	@Autowired
@@ -18,10 +19,12 @@ public class TokenValidator {
 
 	@Autowired
 	UserRepository userRepository;
+	
 	public String verifyToken(String token)  {
+		System.out.println("token===="+token);
 		String[] splited = token.split(" ");
 		token=splited[1];
-		System.out.println("token===="+token);
+		System.out.println("token====++++"+token);
 		String userNameFromJwt = jwtUtils.getUserNameFromJwtToken(token);
 		List<Object[]> userdetails = userRepository.getUserdetails(userNameFromJwt);
 		JSONObject jsonObject = new JSONObject();

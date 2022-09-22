@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.digitalbook.DTO.BookDTO;
 import com.digitalbook.DTO.EditBookDTO;
 import com.digitalbook.security.jwt.JwtUtils;
-import com.digitalbook.security.services.TokenValidator;
 import com.digitalbook.service.AuthorBookService;
-
+import com.digitalbook.service.TokenValidator;
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(value = "/digitalbooks")
 public class AuthorController {
@@ -35,6 +36,7 @@ public class AuthorController {
 			@PathVariable String authorId, @RequestBody BookDTO bookDTO) {
 		int authorid = Integer.parseInt(authorId);
 		ResponseEntity<String> response = null;
+		System.out.println("token===="+token);
 		String verifyToken = tokenValidator.verifyToken(token);
 		JSONObject jsonObject = new JSONObject(verifyToken.toString());
 		String userName = jsonObject.getString("userName");
@@ -64,9 +66,15 @@ public class AuthorController {
 	}
 
 	@PostMapping(value = "/author/{authorId}/books/{bookId}")
-	public ResponseEntity<String> editBlockUnBLockBookByAuthor(@PathVariable String authorId, @PathVariable int bookId,
+	public ResponseEntity<String> editBlockUnBLockBookByAuthor(@RequestHeader("Authorization") String token,@PathVariable String authorId, @PathVariable int bookId,
 			@RequestBody EditBookDTO editBookDTO) {
+		
+		ResponseEntity<String> response=null;
+		String verifyToken = tokenValidator.verifyToken(token);
+		JSONObject jsonObject = new JSONObject(verifyToken.toString());
+		String userRole = jsonObject.getString("userRole");
 		String blockUnblockBookByAuthor = null;
+		if(userRole.equals("ROLE_READER")) {
 		if (editBookDTO.getType().equals("EDIT")) {
 			System.out.println("abc");
 			blockUnblockBookByAuthor = authorBookService.editBookByAuthor(authorId, bookId, editBookDTO);
@@ -74,7 +82,10 @@ public class AuthorController {
 			blockUnblockBookByAuthor = authorBookService.blockUnblockBookByAuthor(authorId, bookId,
 					editBookDTO.getType());
 		}
-		ResponseEntity<String> response;
+		}else {
+			response = new ResponseEntity<String>(new JSONObject().put("response", "Invalid User").toString(),HttpStatus.NOT_FOUND);
+			
+		}
 		if (!blockUnblockBookByAuthor.isEmpty()) {
 			response = new ResponseEntity<String>(blockUnblockBookByAuthor, HttpStatus.OK);
 		} else {

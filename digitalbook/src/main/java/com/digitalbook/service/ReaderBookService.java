@@ -24,16 +24,16 @@ import com.digitalbook.repository.ReadresRepository;
 
 @Service
 public class ReaderBookService {
-	@Autowired
-	BookRepository bookRepository;
-
-	@Autowired
-	MyQueryRepositoryCustom myQueryRepositoryCustom;
 	
 	@Autowired
-	ReadresRepository readresRepository;
+	private BookRepository bookRepository;
 	@Autowired
-	OrderRepository orderRepository;
+	private MyQueryRepositoryCustom myQueryRepositoryCustom;
+	
+	@Autowired
+	private ReadresRepository readresRepository;
+	@Autowired
+	private OrderRepository orderRepository;
 	public String searchBooks(String category, String author, String price, String publisher) {
 		String dynamicquery = "select * from books where ";
 		String query = "";
@@ -71,13 +71,15 @@ public class ReaderBookService {
 			 for(Book books:bookDetails) {
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("bookId", books.getId());
-				jsonObject.put("bookTitle", books.getTitle());
-				jsonObject.put("bookAuthor", books.getAuthor());
-				jsonObject.put("bookCategory", books.getCategory());
-				jsonObject.put("bookPrice", books.getPrice());
-				jsonObject.put("bookpublisher", books.getPublisher());
-				jsonObject.put("bookLogo", books.getLogo());
-				jsonObject.put("bookPublishedDate", books.getPublishedDate());
+				jsonObject.put("title", books.getTitle());
+				jsonObject.put("author", books.getAuthor());
+				jsonObject.put("category", books.getCategory());
+				jsonObject.put("price", books.getPrice());
+				jsonObject.put("publisher", books.getPublisher());
+				jsonObject.put("logo", books.getLogo());
+				jsonObject.put("publishedDate", books.getPublishedDate());
+				jsonObject.put("active", books.getActive());
+				jsonObject.put("content", books.getContent());
 				jsonArray.put(jsonObject);
 			 }
 			return jsonArray.toString();
@@ -86,13 +88,15 @@ public class ReaderBookService {
 			for(Object[] obj:executeQuery) {
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("bookId", obj[0]);
-				jsonObject.put("bookName",obj[1]);
-				jsonObject.put("bookAuthor",obj[2]);
-				jsonObject.put("bookCategory",obj[3]);
-				jsonObject.put("bookPrice", obj[4]);
-				jsonObject.put("bookPublisher",obj[5]);
-				jsonObject.put("bookLogo", obj[6]);
-				jsonObject.put("bookPublishedDate", obj[7]);
+				jsonObject.put("title",obj[1]);
+				jsonObject.put("author",obj[2]);
+				jsonObject.put("category",obj[3]);
+				jsonObject.put("price", obj[4]);
+				jsonObject.put("publisher",obj[5]);
+				jsonObject.put("logo", obj[6]);
+				jsonObject.put("publishedDate", obj[7]);
+				jsonObject.put("active", obj[8]);
+				jsonObject.put("content", obj[9]);
 				jsonArray.put(jsonObject);
 			}
 			return jsonArray.toString();
@@ -101,7 +105,7 @@ public class ReaderBookService {
 	}
 
 	public String getAllPurchagedBooks(String emailId) {
-		
+//		String response="failure";
 		JSONArray jsonArray = new JSONArray();
 		try {
 			
@@ -109,16 +113,15 @@ public class ReaderBookService {
 			for(Object[] obj:allPurchagedBooks) {
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("bookId", obj[0]);
-				jsonObject.put("bookName",obj[1]);
-				jsonObject.put("bookAuthor",obj[2]);
-				jsonObject.put("bookCategory",obj[3]);
-				jsonObject.put("bookPrice", obj[4]);
-				jsonObject.put("bookPublisher",obj[5]);
-				jsonObject.put("bookLogo", obj[6]);
-				jsonObject.put("bookPublishedDate", obj[7]);
-				jsonObject.put("readerId", obj[8]);
-				jsonObject.put("readerName", obj[9]);
-				jsonObject.put("readerEmail", obj[10]);
+				jsonObject.put("title",obj[1]);
+				jsonObject.put("author",obj[2]);
+				jsonObject.put("category",obj[3]);
+				jsonObject.put("price", obj[4]);
+				jsonObject.put("publisher",obj[5]);
+				jsonObject.put("logo", obj[6]);
+				jsonObject.put("publishedDate", obj[7]);
+				jsonObject.put("active", obj[8]);
+				jsonObject.put("content", obj[9]);
 				jsonArray.put(jsonObject);
 			}
 		}catch (Exception e) {
@@ -134,7 +137,8 @@ public class ReaderBookService {
 		String readerName = jsonObject.getString("readerName");
 		String readerEmailId = jsonObject.getString("readerEmailId");
 		
-		List<Object[]> book = bookRepository.checkExistUserAndBook(bookId,readerName,readerEmailId);
+		List<Object[]> book = bookRepository.checkExistUserAndBooks(bookId,readerName,readerEmailId);
+		System.out.println("book"+book);
 		if(!book.isEmpty()) {
 			Random random = new Random();
 			String paymentId = String.format("%04d", random.nextInt(10000));
@@ -201,6 +205,26 @@ public class ReaderBookService {
 		
 		
 		return jsonObject.toString();
+	}
+
+	public String validateBuyABookRequest(String request) {
+		String response="failure";
+		JSONObject jsonObject = new JSONObject(request);
+		Integer bookId = jsonObject.getInt("bookId");
+		String readerName = jsonObject.getString("readerName");
+		String readerEmailId = jsonObject.getString("readerEmailId");
+		
+		if(readerName.isEmpty()) {
+			response="Reader Name Should Not Be Empty";
+		}else if(readerEmailId.isEmpty()) {
+			response="Reader Email Should Not Be Empty";
+		}else if(bookId.equals("")) {
+			response="Book Id Should Not Be Empty";
+		}else {
+			response="success";
+		}
+		return response;
+		
 	}
 
 }
