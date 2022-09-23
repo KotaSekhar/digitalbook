@@ -86,30 +86,33 @@ public class ReaderBookService {
 		} else {
 			List<Object[]> executeQuery = myQueryRepositoryCustom.executeQuery(dynamicquery); 
 			for(Object[] obj:executeQuery) {
+				System.out.println("obj==0"+obj[0]+"obj==1"+obj[1]+"obj==2"+obj[2]+"obj==3"+obj[3]+"obj==4"+obj[4]+"obj==5"+obj[5]+"obj==6"+obj[6]+"obj==7"+obj[7]+"obj==8"+obj[8]+"obj==9"+obj[9]);
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("bookId", obj[0]);
-				jsonObject.put("title",obj[1]);
-				jsonObject.put("author",obj[2]);
-				jsonObject.put("category",obj[3]);
+				jsonObject.put("title",obj[7]);
+				jsonObject.put("author",obj[1]);
+				jsonObject.put("category",obj[2]);
 				jsonObject.put("price", obj[4]);
-				jsonObject.put("publisher",obj[5]);
-				jsonObject.put("logo", obj[6]);
-				jsonObject.put("publishedDate", obj[7]);
+				jsonObject.put("publisher",obj[6]);
+				jsonObject.put("logo", obj[3]);
+				jsonObject.put("publishedDate", obj[5]);
 				jsonObject.put("active", obj[8]);
 				jsonObject.put("content", obj[9]);
 				jsonArray.put(jsonObject);
 			}
+			
 			return jsonArray.toString();
 		}
 
 	}
 
 	public String getAllPurchagedBooks(String emailId) {
-//		String response="failure";
+		String response="failure";
 		JSONArray jsonArray = new JSONArray();
-		try {
-			
-			List<Object[]> allPurchagedBooks = readresRepository.getAllPurchagedBooks(emailId);
+		JSONObject object = new JSONObject();
+			List<Object[]> allPurchagedBooks = bookRepository.getAllPurchagedBooks("kumar@gamil.com");
+			System.out.println("allPurchagedBooks=="+allPurchagedBooks.size());
+			if(!allPurchagedBooks.isEmpty()) {
 			for(Object[] obj:allPurchagedBooks) {
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("bookId", obj[0]);
@@ -120,13 +123,15 @@ public class ReaderBookService {
 				jsonObject.put("publisher",obj[5]);
 				jsonObject.put("logo", obj[6]);
 				jsonObject.put("publishedDate", obj[7]);
-				jsonObject.put("active", obj[8]);
-				jsonObject.put("content", obj[9]);
+				jsonObject.put("content", obj[11]);
 				jsonArray.put(jsonObject);
 			}
-		}catch (Exception e) {
-			e.printStackTrace();
+		}else {
+			response="failure";
+			object.put("response", response);
+			jsonArray.put(object);
 		}
+			
 		return jsonArray.toString();
 	}
 
@@ -136,7 +141,6 @@ public class ReaderBookService {
 		int bookId = jsonObject.getInt("bookId");
 		String readerName = jsonObject.getString("readerName");
 		String readerEmailId = jsonObject.getString("readerEmailId");
-		
 		List<Object[]> book = bookRepository.checkExistUserAndBooks(bookId,readerName,readerEmailId);
 		System.out.println("book"+book);
 		if(!book.isEmpty()) {
@@ -174,7 +178,7 @@ public class ReaderBookService {
 			jsonObject.put("publishedDate", objects[6]);
 			jsonObject.put("publisher", objects[7]);
 		}else {
-			response="invalid user";
+			response="failure";
 			jsonObject.put("response", response);
 		}
 		
@@ -198,8 +202,9 @@ public class ReaderBookService {
 			jsonObject.put("price", objects[5]);
 			jsonObject.put("publishedDate", objects[6]);
 			jsonObject.put("publisher", objects[7]);
+			jsonObject.put("bookId", objects[8]);
 		}else {
-			response="invalid user";
+			response="failure";
 			jsonObject.put("response", response);
 		}
 		

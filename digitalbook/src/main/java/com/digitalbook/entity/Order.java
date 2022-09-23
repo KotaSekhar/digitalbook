@@ -30,6 +30,7 @@ public class Order {
 	@Column(name = "reader_id")
 	private int readerId;
 	
+	@Column(name = "payment_id")
 	private String paymentId;
 	
 	private String Status;

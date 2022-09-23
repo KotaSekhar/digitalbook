@@ -44,8 +44,6 @@ public class ReaderTestController {
 		String token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrdW1hciIsImlhdCI6MTY2Mzg2MzM0OSwiZXhwIjoxNjYzOTEzMzQ5fQ.ZtK2ZhHsnCvB8-_0vlnSA5DZAn5QPXPM21KFP9xDOcEafIesoCqdshzc4CeDzunKpflLLOKe6WVi1N8mDehscg";
 		String verifyToken = tokenValidator.verifyToken(token);
 		System.out.println("verifyToken "+verifyToken);
-//		ResponseEntity<String> buyABook = readerController.buyABook(token, jsonObject.toString());
-//		System.out.println("buyABook==" + buyABook);
 
 	}
 }
