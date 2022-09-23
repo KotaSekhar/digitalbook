@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,12 +31,16 @@ public class AuthorTestController {
 	private AuthorController authorController;
 	@Mock 
 	AuthorBookService authorBookService;
-	
+	@Mock
+	TokenValidator tokenValidator;
 
 	
 	
 	@Test
-    void testGetBooks() throws Exception {
+    void createbook(){
+		  String token="Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzZWtoYXIiLCJpYXQiOjE2NjM5NjkwMzYsImV4cCI6MTY2NDAxOTAzNn0.vfFyKCp0fv2EazWJ-Tcu9vxfpi0aTPFzO192bAoczuVY6_x1IpmtqxDWCx-dsF5F3B138LM7vKT2fk4zQPjojg";
+		  String authorId="1";
+		  int authorid=1;
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		BookDTO bookDTO = new BookDTO();
 		bookDTO.setTitle("testTitle");
@@ -47,18 +52,37 @@ public class AuthorTestController {
 		bookDTO.setLogo("https://www.pexels.com");
 		bookDTO.setActive("ACTIVE");
 		bookDTO.setContent("This is a comic book");
+		 String validateBookDTO = authorBookService.validateBookDTO(bookDTO);
+		 validateBookDTO="Success";
+		 when(authorBookService.validateBookDTO(bookDTO)).thenReturn(validateBookDTO);
 		
-		
-		Book books = Book.builder().title("testTitle")
-				.category(Category.valueOf("COMIC")).author("sekhar")
-				.price(new BigDecimal("500")).publisher("Rajesh").logo("https://www.pexels.com")
-				.publishedDate(timestamp).active("ACTIVE").content("This is a comic book").build();
-		ResponseEntity<String>	response = new ResponseEntity<String>(books.toString(), HttpStatus.OK);
-       when(authorBookService.createBookByAuthor(1, bookDTO)).thenReturn(response.toString());
-       String authorId="1";
-       String token="Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzZWtoYXIiLCJpYXQiOjE2NjM4NTE2MzYsImV4cCI6MTY2MzkwMTYzNn0.X6NWPYSr_X7TKrdM4wBxWfkq9knT1BBXoNDUu0ZPzmeChPDUuGEMOhmydUYumsm0i-3s0_VmS8W0bNNdC4pJ1A";
-       ResponseEntity<String> createBookByAuthor = authorController.createBookByAuthor(token, authorId, bookDTO);
-       assertEquals(response, createBookByAuthor);
+		 String createBookByAuthor = authorBookService.createBookByAuthor(authorid, bookDTO);
+		 createBookByAuthor=new JSONObject().put("response", "create book successfully").put("bookId", 1).toString();
+		 when(authorBookService.createBookByAuthor(authorid, bookDTO)).thenReturn(createBookByAuthor);
+		ResponseEntity<String>	response = new ResponseEntity<String>(new JSONObject().put("response", "create book successfully").put("bookId", 1).toString(), HttpStatus.OK);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("userName","sekhar");
+		jsonObject.put("userRole", "ROLE_AUTHOR");
+		String verifyToken = tokenValidator.verifyToken(token);
+		verifyToken=jsonObject.toString();
+		 when(tokenValidator.verifyToken(token)).thenReturn(verifyToken);
+       assertEquals(authorController.createBookByAuthor(token, authorId, bookDTO), response);
+       
+   }
+	
+	@Test
+    void createbookFailureTest() {
+		  String token="Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzZWtoYXIiLCJpYXQiOjE2NjM5NjkwMzYsImV4cCI6MTY2NDAxOTAzNn0.vfFyKCp0fv2EazWJ-Tcu9vxfpi0aTPFzO192bAoczuVY6_x1IpmtqxDWCx-dsF5F3B138LM7vKT2fk4zQPjojg";
+		  String authorId="1";
+			ResponseEntity<String>	response = new ResponseEntity<String>(new JSONObject().put("response", "Invalid User").toString(), HttpStatus.OK);
+			BookDTO bookDTO = new BookDTO();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("userName","sekhar");
+		jsonObject.put("userRole", "ROLE_ADMIN");
+		String verifyToken = tokenValidator.verifyToken(token);
+		verifyToken=jsonObject.toString();
+		 when(tokenValidator.verifyToken(token)).thenReturn(verifyToken);
+       assertEquals(authorController.createBookByAuthor(token, authorId, bookDTO), response);
        
    }
 }

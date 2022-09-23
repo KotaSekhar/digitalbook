@@ -23,13 +23,12 @@ import com.digitalbook.service.TokenValidator;
 @RequestMapping(value = "/digitalbooks")
 public class AuthorController {
 
+	
 	@Autowired
 	AuthorBookService authorBookService;
 	@Autowired
 	TokenValidator tokenValidator;
 
-	@Autowired
-	JwtUtils jwtUtils;
 
 	@PostMapping(value = "/author/{authorId}/books")
 	public ResponseEntity<String> createBookByAuthor(@RequestHeader("Authorization") String token,
