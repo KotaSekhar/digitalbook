@@ -201,7 +201,8 @@ String dynamicquery="select * from books where  book_price= '500' and  book_cate
 	@Test
 	void getBookByPaymentId() {
 		String response = "failure";
-		String email="kumar@gamil.com";
+		String emailId="kumar@gamil.com";
+		String pid="2647";
 		JSONObject jsonObject = new JSONObject();
 		
 		jsonObject.put("title","ironman");
@@ -213,9 +214,12 @@ String dynamicquery="select * from books where  book_price= '500' and  book_cate
 		jsonObject.put("publishedDate", "2022-09-22 23:34:41");
 		jsonObject.put("publisher","rajesh");
 		jsonObject.put("bookId", 1);
-		JSONObject jsonObject2 = new JSONObject().put("response", response);
 		
-		 assertEquals(readerBookService.getBookByPaymentId(email,"1234"), jsonObject2.toString());
+		Object[] myArray = {"ironman","it is comic book","sekhar","COMIC","https://www.pexels.com",500.00,"2022-09-22 23:34:41","rajesh",1};
+		List<Object[]> book =  orderRepository.checkExistUserByEmailAndBookByPaymentId(emailId,pid);
+		book.add(myArray);
+		when(orderRepository.checkExistUserByEmailAndBookByPaymentId(emailId,pid)).thenReturn(book);
+		 assertEquals(readerBookService.getBookByPaymentId(emailId,pid), jsonObject.toString());
 	}
 	@Test
 	void getBookByPaymentIdFailureTest() {
@@ -223,5 +227,15 @@ String dynamicquery="select * from books where  book_price= '500' and  book_cate
 		String email="kumar@gamil.com";
 		JSONObject jsonObject2 = new JSONObject().put("response", response);
 		 assertEquals(readerBookService.getBookByPaymentId(email,"1234"), jsonObject2.toString());
+	}
+	
+	@Test
+	void validateBuyABookRequest() {
+		String response = "success";
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("bookId", 0);
+		jsonObject.put("readerName", "sekhar");
+		jsonObject.put("readerEmailId", "sekhar@gmail.com");
+		 assertEquals(readerBookService.validateBuyABookRequest(jsonObject.toString()), response);
 	}
 }
