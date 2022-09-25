@@ -34,7 +34,8 @@ public class AuthorBookService {
 		String response = "";
 		JSONObject jsonObject = new JSONObject();
 		try {
-			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//			Timestamp timestamp = new Timestamp(bookDTO.getPublishedDate());
+			Timestamp timestamp = Timestamp.valueOf( bookDTO.getPublishedDate());
 //			Author author = authorRpository.findById(authorid);
 //			userRepository.findByIdandRole(authorid,bookDTO.getrole);
 			Book books = bookRepository.save(Book.builder().title(bookDTO.getTitle())
@@ -85,9 +86,9 @@ public class AuthorBookService {
 		return response;
 	}
 
-	public String editBookByAuthor(String emailId, int bookId,EditBookDTO editBookDTO) {
+	public String editBookByAuthor(int authorId, int bookId,EditBookDTO editBookDTO) {
 		String response = "failure";
-		List<Object[]> list = bookRepository.checkExistUserAndBook(bookId, emailId);
+		List<Object[]> list = bookRepository.checkExistUserAndBook(bookId, authorId);
 
 		JSONObject jsonObject = new JSONObject();
 		if (!list.isEmpty()) {
@@ -102,17 +103,17 @@ public class AuthorBookService {
 			System.out.println(book);
 			bookRepository.save(book);
 		
-			
+			response = "Edit the book Successfully";
 			
 		} else {
 			response = "invalid user";
-			jsonObject.put("response", response);
+			
 		}
-
+		jsonObject.put("response", response);
 		return jsonObject.toString();
 	}
 
-	public String blockUnblockBookByAuthor(String authorId, int bookId, String type) {
+	public String blockUnblockBookByAuthor(int authorId, int bookId, String type) {
 		String response = "failure";
 		List<Object[]> list = bookRepository.checkExistUserAndBook(bookId, authorId);
 

@@ -66,6 +66,7 @@ public class ReaderServiceTestController {
 		assertEquals(readerBookService.buyABook(jsonObject.toString()), jsonObject2.toString());
 	}
 
+	
 	@Test
 	void buyABookFailureTest() {
 		String response = "failure";

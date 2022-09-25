@@ -65,7 +65,7 @@ public class AuthorController {
 	}
 
 	@PostMapping(value = "/author/{authorId}/books/{bookId}")
-	public ResponseEntity<String> editBlockUnBLockBookByAuthor(@RequestHeader("Authorization") String token,@PathVariable String authorId, @PathVariable int bookId,
+	public ResponseEntity<String> editBlockUnBLockBookByAuthor(@RequestHeader("Authorization") String token,@PathVariable int authorId, @PathVariable int bookId,
 			@RequestBody EditBookDTO editBookDTO) {
 		
 		ResponseEntity<String> response=null;
@@ -73,19 +73,31 @@ public class AuthorController {
 		JSONObject jsonObject = new JSONObject(verifyToken.toString());
 		String userRole = jsonObject.getString("userRole");
 		String blockUnblockBookByAuthor = null;
-		if(userRole.equals("ROLE_READER")) {
+		if(userRole.equals("ROLE_AUTHOR")) {
 		if (editBookDTO.getType().equals("EDIT")) {
 			System.out.println("abc");
 			blockUnblockBookByAuthor = authorBookService.editBookByAuthor(authorId, bookId, editBookDTO);
+			if (!blockUnblockBookByAuthor.isEmpty()) {
+				response = new ResponseEntity<String>(blockUnblockBookByAuthor, HttpStatus.OK);
+			} else {
+				response = new ResponseEntity<String>(
+						new JSONObject().put("response", "create book failure").toString(), HttpStatus.NOT_FOUND);
+			}
 		} else {
 			blockUnblockBookByAuthor = authorBookService.blockUnblockBookByAuthor(authorId, bookId,
 					editBookDTO.getType());
+			if (!blockUnblockBookByAuthor.isEmpty()) {
+				response = new ResponseEntity<String>(blockUnblockBookByAuthor, HttpStatus.OK);
+			} else {
+				response = new ResponseEntity<String>(
+						new JSONObject().put("response", "Block and UnBlock is failed").toString(), HttpStatus.NOT_FOUND);
+			}
 		}
 		}else {
 			response = new ResponseEntity<String>(new JSONObject().put("response", "Invalid User").toString(),HttpStatus.NOT_FOUND);
 			
 		}
-		if (!blockUnblockBookByAuthor.isEmpty()) {
+		if (blockUnblockBookByAuthor!=null) {
 			response = new ResponseEntity<String>(blockUnblockBookByAuthor, HttpStatus.OK);
 		} else {
 			response = new ResponseEntity<String>(HttpStatus.NOT_FOUND);

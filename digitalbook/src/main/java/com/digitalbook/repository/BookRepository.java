@@ -22,7 +22,7 @@ public interface BookRepository extends CrudRepository<Book, Integer> {
 	List<Object[]> checkExistUserAndBooks(int bookId, String readerName, String readerEmailId);
 
 	@Query(value="SELECT b.book_title,b.book_author,b.book_category,b.book_logo,b.book_price,b.book_published_date,b.book_publisher,b.book_content,b.book_active FROM digitalbooksdb.books b,digitalbooksdb.users u  where u.id=:authorId and b.book_id=:bookId and u.username=b.book_author and u.role='AUTHOR' and u.status='LOGIN'",nativeQuery = true)
-	List<Object[]> checkExistUserAndBook(int bookId, String authorId);
+	List<Object[]> checkExistUserAndBook(int bookId, int authorId);
 	
 	Book findById(int bookId);
 
