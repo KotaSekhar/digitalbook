@@ -1,6 +1,7 @@
 package com.digitalbook;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -21,7 +22,6 @@ import com.digitalbook.DTO.BookDTO;
 import com.digitalbook.DTO.EditBookDTO;
 import com.digitalbook.entity.Book;
 import com.digitalbook.entity.Category;
-import com.digitalbook.repository.AuthorRpository;
 import com.digitalbook.repository.BookRepository;
 import com.digitalbook.repository.UserRepository;
 import com.digitalbook.service.AuthorBookService;
@@ -33,14 +33,40 @@ public class AuthorServiceTestController {
 	private AuthorBookService authorBookService;
 	
 	@Mock
-	AuthorRpository authorRpository;
-	@Mock
 	BookRepository bookRepository;
 	@Mock
 	UserRepository userRepository;
 	
 	@Test
     void createbook(){
+		  int authorid=1;
+		BookDTO bookDTO = new BookDTO();
+		bookDTO.setTitle("testTitle");
+		bookDTO.setCategory("COMIC");
+		bookDTO.setAuthor("sekhar");
+		bookDTO.setPrice(new BigDecimal("500"));
+		bookDTO.setPublisher("Rajesh");
+		bookDTO.setPublishedDate("2022-09-22 23:34:41");
+		bookDTO.setLogo("https://www.pexels.com");
+		bookDTO.setActive("ACTIVE");
+		bookDTO.setContent("This is a comic book");
+		
+		Book book = Book.builder().id(1).title("testTitle")
+		.category(Category.valueOf("COMIC")).author("sekhar")
+		.price(new BigDecimal("500")).publisher("Rajesh").logo("https://www.pexels.com")
+		.publishedDate("2022-09-22 23:34:41").active("ACTIVE").content("This is a comic book").build();
+		 when( bookRepository.save(Book.builder().title("testTitle")
+					.category(Category.valueOf("COMIC")).author("sekhar")
+					.price(new BigDecimal("500")).publisher("Rajesh").logo("https://www.pexels.com")
+					.publishedDate("2022-09-22 23:34:41").active("ACTIVE").content("This is a comic book").build())).thenReturn(book);
+	String	response = new JSONObject().put("response", "create book successfully").put("bookId", 1).toString();
+			
+       assertEquals(authorBookService.createBookByAuthor( authorid, bookDTO), response);
+       
+   }
+	
+	@Test
+    void createbookFailure(){
 		  int authorid=1;
 		  Timestamp timestamp = Timestamp.valueOf( "2022-09-25 12:12:05.638");
 		BookDTO bookDTO = new BookDTO();
@@ -57,12 +83,12 @@ public class AuthorServiceTestController {
 		Book book = Book.builder().id(1).title("testTitle")
 		.category(Category.valueOf("COMIC")).author("sekhar")
 		.price(new BigDecimal("500")).publisher("Rajesh").logo("https://www.pexels.com")
-		.publishedDate(timestamp).active("ACTIVE").content("This is a comic book").build();
+		.publishedDate("2022-09-22 23:34:41").active("ACTIVE").content("This is a comic book").build();
 		 when( bookRepository.save(Book.builder().title("testTitle")
 					.category(Category.valueOf("COMIC")).author("sekhar")
 					.price(new BigDecimal("500")).publisher("Rajesh").logo("https://www.pexels.com")
-					.publishedDate(timestamp).active("ACTIVE").content("This is a comic book").build())).thenReturn(book);
-	String	response = new JSONObject().put("response", "create book successfully").put("bookId", 1).toString();
+					.publishedDate("2022-09-22 23:34:41").active("ACTIVE").content("This is a comic book").build())).thenReturn(book);
+	String	response = new JSONObject().put("response", "create book failure").toString();
 			
        assertEquals(authorBookService.createBookByAuthor( authorid, bookDTO), response);
        
@@ -89,13 +115,13 @@ public class AuthorServiceTestController {
 		 book = Book.builder().id(1).title("testTitle")
 		.category(Category.valueOf("COMIC")).author("sekhar")
 		.price(new BigDecimal("500")).publisher("Rajesh").logo("https://www.pexels.com")
-		.publishedDate(timestamp).active("ACTIVE").content("This is a comic book").build();
+		.publishedDate("2022-09-22 23:34:41").active("ACTIVE").content("This is a comic book").build();
 		when(bookRepository.findById(bookId)).thenReturn(book);
 		book.setTitle("Bat-Man");
 		Book editbook = Book.builder().id(1).title("Bat-Man")
 				.category(Category.valueOf("COMIC")).author("sekhar")
 				.price(new BigDecimal("500")).publisher("Rajesh").logo("https://www.pexels.com")
-				.publishedDate(timestamp).active("ACTIVE").content("This is a comic book").build();
+				.publishedDate("2022-09-22 23:34:41").active("ACTIVE").content("This is a comic book").build();
 		when( bookRepository.save(book)).thenReturn(editbook);
 		
 	String	response = new JSONObject().put("response", "Edit the book Successfully").toString();

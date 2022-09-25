@@ -35,7 +35,7 @@ import com.digitalbook.springjwt.payload.response.MessageResponse;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController {
+public class AuthController extends BaseController{
 	@Autowired
 	AuthenticationManager authenticationManager;
 
@@ -62,14 +62,16 @@ public class AuthController {
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
-
+		userRepository.updateStatus(loginRequest.getUsername());
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 												 userDetails.getId(), 
 												 userDetails.getUsername(), 
 												 userDetails.getEmail(), 
 												 roles));
+		
 	}
 
+	
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 		Boolean existsByUsername = userRepository.existsByUsername(signUpRequest.getUsername());

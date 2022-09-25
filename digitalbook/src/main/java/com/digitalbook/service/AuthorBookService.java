@@ -2,6 +2,7 @@ package com.digitalbook.service;
 
 import java.sql.Date;
 
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -14,17 +15,13 @@ import org.springframework.stereotype.Service;
 
 import com.digitalbook.DTO.BookDTO;
 import com.digitalbook.DTO.EditBookDTO;
-import com.digitalbook.entity.Author;
 import com.digitalbook.entity.Book;
 import com.digitalbook.entity.Category;
-import com.digitalbook.repository.AuthorRpository;
 import com.digitalbook.repository.BookRepository;
 import com.digitalbook.repository.UserRepository;
 
 @Service
 public class AuthorBookService {
-	@Autowired
-	AuthorRpository authorRpository;
 	@Autowired
 	BookRepository bookRepository;
 	@Autowired
@@ -34,14 +31,11 @@ public class AuthorBookService {
 		String response = "";
 		JSONObject jsonObject = new JSONObject();
 		try {
-//			Timestamp timestamp = new Timestamp(bookDTO.getPublishedDate());
-			Timestamp timestamp = Timestamp.valueOf( bookDTO.getPublishedDate());
-//			Author author = authorRpository.findById(authorid);
-//			userRepository.findByIdandRole(authorid,bookDTO.getrole);
+			 Timestamp timestamp = Timestamp.valueOf( "2022-09-25 12:12:05.638");
 			Book books = bookRepository.save(Book.builder().title(bookDTO.getTitle())
 					.category(Category.valueOf(bookDTO.getCategory())).author(bookDTO.getAuthor())
 					.price(bookDTO.getPrice()).publisher(bookDTO.getPublisher()).logo(bookDTO.getLogo())
-					.publishedDate(timestamp).active(bookDTO.getActive()).content(bookDTO.getContent()).build());
+					.publishedDate(bookDTO.getPublishedDate()).active(bookDTO.getActive()).content(bookDTO.getContent()).build());
 			if (books != null) {
 				response = "create book successfully";
 				jsonObject.put("bookId", books.getId());

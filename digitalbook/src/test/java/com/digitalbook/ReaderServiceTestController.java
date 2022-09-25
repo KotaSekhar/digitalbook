@@ -1,6 +1,7 @@
 package com.digitalbook;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -22,7 +23,6 @@ import com.digitalbook.entity.Book;
 import com.digitalbook.entity.Category;
 import com.digitalbook.repository.BookRepository;
 import com.digitalbook.repository.OrderRepository;
-import com.digitalbook.repository.ReadresRepository;
 import com.digitalbook.service.MyQueryRepositoryCustom;
 import com.digitalbook.service.MyQueryRepositoryImpl;
 import com.digitalbook.service.ReaderBookService;
@@ -127,6 +127,7 @@ public class ReaderServiceTestController {
 		jsonObject.put("logo","https://www.pexels.com");
 		jsonObject.put("publishedDate", "2022-09-22 23:34:41");
 		jsonObject.put("content","it is comic book");
+		jsonObject.put("readerId",2);
 		JSONArray jsonArray = new JSONArray().put(jsonObject);
 		Object[] myArray = {1,"ironman","sekhar","COMIC",500.00,"rajesh","https://www.pexels.com","2022-09-22 23:34:41",2,"kumar","kumar@gmail.com","it is comic book"};
 		List<Object[]> allPurchagedBooks = bookRepository.getAllPurchagedBooks(emailId);
@@ -158,16 +159,15 @@ public class ReaderServiceTestController {
 		jsonObject.put("price", 500.00);
 		jsonObject.put("publisher","Rajesh");
 		jsonObject.put("logo","https://www.pexels.com");
-		jsonObject.put("publishedDate", "2022-09-22 23:34:41.0");
+		jsonObject.put("publishedDate", "2022-09-22 23:34:41");
 		jsonObject.put("active","active");
 		jsonObject.put("content","it is comic book");
-		Timestamp timestamp = Timestamp.valueOf( "2022-09-22 23:34:41");
+//		Timestamp timestamp = Timestamp.valueOf( "2022-09-22 23:34:41");
 		Book books = Book.builder().id(1).title("ironman")
 				.author("sekhar").category(Category.valueOf("COMIC"))
 				.price(new BigDecimal("500")).publisher("Rajesh").logo("https://www.pexels.com")
-				.publishedDate(timestamp).active("active").content("it is comic book").build();
+				.publishedDate("2022-09-22 23:34:41").active("active").content("it is comic book").build();
 		JSONArray jsonArray = new JSONArray().put(jsonObject);
-//		Object[] myArray = {1,"ironman","sekhar","COMIC",500.00,"rajesh","https://www.pexels.com","2022-09-22 23:34:41",2,"kumar","kumar@gmail.com","active","it is comic book"};
 		List<Book> book = bookRepository.getBookDetails();
 		book.add(books);
 		
@@ -194,7 +194,6 @@ String dynamicquery="select * from books where  book_price= '500' and  book_cate
 		List<Object[]> book = myQueryRepositoryCustom.executeQuery(dynamicquery);
 		book.add(myArray);
 		
-//		[{"author":"sekhar","price":500,"publisher":"rajesh","logo":"https://www.pexels.com","active":2,"publishedDate":"2022-09-22 23:34:41","title":"ironman","category":"COMIC","content":"kumar","bookId":1}]
 		when(myQueryRepositoryCustom.executeQuery(dynamicquery)).thenReturn(book);
 		 assertEquals(readerBookService.searchBooks("COMIC", "sekhar", "500", "rajesh"), jsonArray.toString());
 	}
@@ -239,4 +238,5 @@ String dynamicquery="select * from books where  book_price= '500' and  book_cate
 		jsonObject.put("readerEmailId", "sekhar@gmail.com");
 		 assertEquals(readerBookService.validateBuyABookRequest(jsonObject.toString()), response);
 	}
+	
 }

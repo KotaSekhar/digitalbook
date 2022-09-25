@@ -3,6 +3,7 @@ package com.digitalbook.service;
 
 
 import java.util.HashMap;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -19,7 +20,6 @@ import com.digitalbook.entity.Book;
 import com.digitalbook.entity.Order;
 import com.digitalbook.repository.BookRepository;
 import com.digitalbook.repository.OrderRepository;
-import com.digitalbook.repository.ReadresRepository;
 
 
 @Service
@@ -31,8 +31,6 @@ public class ReaderBookService {
 	private MyQueryRepositoryCustom myQueryRepositoryCustom;
 	
 	@Autowired
-	private ReadresRepository readresRepository;
-	@Autowired
 	private OrderRepository orderRepository;
 	public String searchBooks(String category, String author, String price, String publisher) {
 		String dynamicquery = "select * from books where ";
@@ -40,16 +38,24 @@ public class ReaderBookService {
 		HashMap<String, String> hashMap = new HashMap<String, String>();
 		if (!category.equalsIgnoreCase("NA")) {
 			hashMap.put("book_category", category);
+		}else {
+			hashMap.put("book_category", "NA");
 		}
 		if (!author.equalsIgnoreCase("NA")) {
 			hashMap.put("book_author", author);
+		}else {
+			hashMap.put("book_author", "NA");
 		}
 		if (!price.equalsIgnoreCase("NA")) {
 			hashMap.put("book_price", price);
+		}else {
+			hashMap.put("book_price", "NA");
 		}
 
 		if (!publisher.equalsIgnoreCase("NA")) {
 			hashMap.put("book_publisher", publisher);
+		}else {
+			hashMap.put("book_publisher", "NA");
 		}
 		Set<Entry<String,String>> entrySet = hashMap.entrySet();
 		if(!hashMap.isEmpty()) {
@@ -124,6 +130,7 @@ public class ReaderBookService {
 				jsonObject.put("logo", obj[6]);
 				jsonObject.put("publishedDate", obj[7]);
 				jsonObject.put("content", obj[11]);
+				jsonObject.put("readerId", obj[8]);
 				jsonArray.put(jsonObject);
 			}
 		}else {
@@ -230,6 +237,12 @@ public class ReaderBookService {
 		}
 		return response;
 		
+	}
+
+	public String deleteBook(int bookId, int readerId) {
+		orderRepository.deleteBook(bookId,readerId);
+		
+		return new JSONObject().put("response", "Successfully Deleted").toString();
 	}
 
 }

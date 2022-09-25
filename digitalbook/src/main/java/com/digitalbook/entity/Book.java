@@ -55,7 +55,7 @@ public class Book {
 	private String logo;
 
 	@Column(name = "book_published_date")
-	private Timestamp publishedDate;
+	private String publishedDate;
 
 	@Column(name = "book_active")
 	private String active;

@@ -199,4 +199,26 @@ public class ReaderTestController {
 		 assertEquals(readerController.getBookByPaymentId(token, emailId,pid),response);
 
 	}
+	
+	@Test
+	void deleteBook() {
+		String token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrdW1hciIsImlhdCI6MTY2Mzg2MzM0OSwiZXhwIjoxNjYzOTEzMzQ5fQ.ZtK2ZhHsnCvB8-_0vlnSA5DZAn5QPXPM21KFP9xDOcEafIesoCqdshzc4CeDzunKpflLLOKe6WVi1N8mDehscg";
+		int bookId=1;
+		int readerId=1;
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("userName","kumar");
+		jsonObject.put("userRole", "ROLE_READER");
+		String verifyToken = tokenValidator.verifyToken(token);
+		verifyToken=jsonObject.toString();
+		 when(tokenValidator.verifyToken(token)).thenReturn(verifyToken);
+		
+		String getBookByPaymentId = readerBookService.deleteBook(bookId, readerId);
+		getBookByPaymentId="Successfully Deleted";
+		 when(readerBookService.deleteBook(bookId, readerId)).thenReturn(getBookByPaymentId);
+		
+		 ResponseEntity<String>	response = new ResponseEntity<String>("Successfully Deleted", HttpStatus.OK);
+			
+		 assertEquals(readerController.deleteBook(token,bookId, readerId),response);
+
+	}
 }

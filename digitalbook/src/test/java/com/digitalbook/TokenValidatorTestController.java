@@ -32,7 +32,7 @@ public class TokenValidatorTestController {
 	
 	@Test
     void verifyToken(){
-		  String token1="Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzZWtoYXIiLCJpYXQiOjE2NjM5NjkwMzYsImV4cCI6MTY2NDAxOTAzNn0.vfFyKCp0fv2EazWJ-Tcu9vxfpi0aTPFzO192bAoczuVY6_x1IpmtqxDWCx-dsF5F3B138LM7vKT2fk4zQPjojg";
+		  String token1="Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzZWtoYXIiLCJpYXQiOjE2NjM5NjkwMzYsImV4cCI6MTY2NDAxOTAzNn0.vfFyKCp0fv2EazWJ-Tcu9vxfpi0aTPFzO192bAoczuVY6_x1IpmtqxDWCx-dsF5F3B138LM7vKT2fk4zQPjojg";
 		  String token="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzZWtoYXIiLCJpYXQiOjE2NjM5NjkwMzYsImV4cCI6MTY2NDAxOTAzNn0.vfFyKCp0fv2EazWJ-Tcu9vxfpi0aTPFzO192bAoczuVY6_x1IpmtqxDWCx-dsF5F3B138LM7vKT2fk4zQPjojg";
 			
 		 
